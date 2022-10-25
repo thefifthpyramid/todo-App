@@ -56,6 +56,9 @@
                                     <label for="detail" class="col-form-label">Upload File:</label>
                                     <input type="file" class="form-control" id="task_file" @change="selectedTaskFile">
                                     <span class="text-danger" v-show="taskErrors.details">this field is require</span>
+                                    <div id="preview">
+                                        <img v-if="url" :src="url" :class="`mt-3 ${display}`" style="width:100%;height:400px"/>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -83,6 +86,7 @@ export default{
     }),
     data(){
         return{
+            display: "d-none",
             create_seccessfuly : "",
             taskData:{
                 id      :'',
@@ -100,10 +104,15 @@ export default{
                 task_file:  false
             },
             getTasksData: {},
+            url: "https://cdn-icons-png.flaticon.com/512/1088/1088537.png",
         }//end return
     },
     methods:{
-
+        onFileChange(e) {
+            this.display = "";
+            const file = e.target.files[0];
+            this.url = URL.createObjectURL(file);
+        },
         storeTask(){
             this.taskData.title     == "" ? this.taskErrors.title       = true : this.taskErrors.title    = false
             this.taskData.date      == '' ? this.taskErrors.date        = true : this.taskErrors.date     = false
@@ -125,6 +134,8 @@ export default{
                         detail      :  '',
                         task_file   :  '',
                     }
+                    this.url = "null"
+                    this.display = "d-none"
                     document.querySelector("#task_file").value = ""
                 });
             }else {
@@ -133,6 +144,7 @@ export default{
         },//end  store task
         selectedTaskFile(e){
             //console.log(e)
+            this.onFileChange(e);
             let file = e.target.files[0];
             let reader = new FileReader();
             reader.onloadend = () => {
